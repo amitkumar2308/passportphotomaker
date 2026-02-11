@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PassportPro AI - Professional Passport Photos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-dark: #4338ca;
+      --secondary: #0ea5e9;
+      --accent: #8b5cf6;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-light: #f8fafc;
+      --surface: #ffffff;
+      --success: #10b981;
+      --error: #ef4444;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f1f5f9;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.1) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 4rem;
+    }
+
+    /* Navbar */
+    .navbar {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+    }
+
+    .nav-content {
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      max-width: 800px;
+      margin-top: 2rem;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3.5rem;
+      line-height: 1.1;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #1e293b 0%, #4F46E5 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Upload Card */
+    .upload-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-xl);
+      width: 100%;
+      max-width: 900px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .upload-card:hover {
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+    }
+
+    .upload-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    /* File Drop Zone */
+    .drop-zone {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 3rem 2rem;
+      text-align: center;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--primary);
+      background: #eef2ff;
+      transform: scale(1.01);
+    }
+
+    .drop-icon {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      background: #e0e7ff;
+      padding: 1rem;
+      border-radius: 50%;
+    }
+
+    .drop-text-main {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .drop-text-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .selected-file-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #e0f2fe;
+      color: #0284c7;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      align-self: center;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Color Selection */
+    .color-section {
+      text-align: center;
+    }
+
+    .color-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .color-options {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .color-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .color-btn::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .color-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .color-btn.selected::after {
+      border-color: var(--primary);
+      inset: -6px;
+    }
+
+    /* Generate Button */
+    .generate-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 1rem 3rem;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+      width: 100%;
+      max-width: 400px;
+      align-self: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .generate-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: #94a3b8;
+      box-shadow: none;
+    }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+      width: 100%;
+      max-width: 1100px;
+      perspective: 1000px;
+    }
+
+    .result-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      transition: transform 0.4s ease;
+      animation: slideUp 0.6s ease-out both;
+    }
+
+    .result-card:hover {
+      transform: translateY(-5px) rotateX(2deg);
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .card-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .image-frame {
+      aspect-ratio: 3/4;
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #cbd5e0;
+      position: relative;
+    }
+    
+    .image-frame.has-image {
+        border: none;
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+    }
+
+    .image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Processing Status */
+    .status-placeholder {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 2rem;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    .download-btn {
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .download-btn:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+
+    .expiry-tag {
+        font-size: 0.85rem;
+        color: #b45309;
+        background: #fef3c7;
+        padding: 0.5rem;
+        border-radius: var(--radius-sm);
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+    /* Ad Containers */
+    .ad-banner-bottom {
+      width: 100%;
+      max-width: 728px;
+      height: 90px;
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 3rem;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+    }
+
+    .ad-sidebar-right {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 160px;
+      height: 600px;
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      z-index: 40;
+    }
+
+    @media (max-width: 1300px) {
+      .ad-sidebar-right { display: none; }
+    }
+
+    @media (max-width: 768px) { 
+      .hero h1 { font-size: 2.5rem; }
+      .upload-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        PassportPro AI
+      </a>
+    </div>
+  </nav>
+
+  <!-- AD SLOT: Right Sidebar (Desktop Only) -->
+  <div class="ad-sidebar-right">
+    <span>Vertical Ad (Right)</span>
+  </div>
+
+  <div class="container">
+    
+    <!-- Hero Section -->
+    <header class="hero">
+      <h1>The Professional Way to Create<br>Passport Photos.</h1>
+      <p>Instant, AI-powered background removal and perfect formatting. <br /> Professional results from the comfort of your home.</p>
+    </header>
+
+    <!-- Upload Card -->
+    <div class="upload-card">
+      <input type="file" id="img" style="display: none;" accept="image/*" onchange="handleFileSelect(event)" />
+      
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('img').click()">
+        <svg class="drop-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <div class="drop-text-main">Drop your photo here, or browse</div>
+        <div class="drop-text-sub">Supports High-Res PNG & JPG up to 10MB</div>
+      </div>
+
+      <div class="action-bar">
+        <!-- Selected File Display -->
+        <div id="selectedFile" class="selected-file-badge" style="display: none;"></div>
+
+        <!-- Color Selection -->
+        <div class="color-section">
+          <span class="color-label">Select Background</span>
+          <div class="color-options">
+            <div class="color-btn selected" onclick="selectColor(this, '#FFFFFF')" style="background-color: #FFFFFF;" title="White"></div>
+            <div class="color-btn" onclick="selectColor(this, '#D3E3FC')" style="background-color: #D3E3FC;" title="Light Blue"></div>
+            <div class="color-btn" onclick="selectColor(this, '#E2E8F0')" style="background-color: #E2E8F0;" title="Light Grey"></div>
+            <div class="color-btn" onclick="selectColor(this, '#FFFDD0')" style="background-color: #FFFDD0;" title="Cream"></div>
+          </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button id="generateBtn" class="generate-btn" onclick="upload(event)" disabled>
+          Generate Passport Photo
+        </button>
+      </div>
+      
+      <div id="statusMessage" class="status-message" style="display: none;"></div>
+    </div>
+
+    <!-- Results Grid -->
+    <div id="resultsGrid" class="results-grid" style="display: none;">
+      
+      <!-- Original Card -->
+      <div class="result-card" id="card-original">
+        <div class="card-header">
+          <div class="card-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <span class="card-title">Original Photo</span>
+        </div>
+        <div class="image-frame" id="originalFrame">
+           <div class="status-placeholder" id="originalPlaceholder">
+             <p>No image selected</p>
+           </div>
+           <img id="originalImage" style="display: none;" />
+        </div>
+      </div>
+
+      <!-- Processing/Status Card -->
+      <div class="result-card" id="card-status" style="display: none;">
+        <div class="card-header">
+          <div class="card-icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+            </svg>
+          </div>
+          <span class="card-title">Processing Status</span>
+        </div>
+        <div class="image-frame" style="border: none; background: transparent;">
+           <div id="processingPlaceholder" class="status-placeholder" style="display: none;">
+             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+             </svg>
+             <p style="color: #10b981; font-weight: 600; margin-top: 0.5rem;">Processing Complete!</p>
+           </div>
+           
+           <div id="processingLoader" style="text-align: center;">
+             <div class="spinner"></div>
+             <p style="color: var(--text-muted);">AI is optimizing your photo...</p>
+           </div>
+
+           <div id="processingInfo" style="margin-top: 1rem; width: 100%; display: none;">
+             <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px;">
+               <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                 <span style="color: var(--text-muted);">Status</span>
+                 <span id="statusText" style="font-weight: 600; color: var(--primary);">Processing</span>
+               </div>
+               <div style="display: flex; justify-content: space-between;">
+                 <span style="color: var(--text-muted);">Format</span>
+                 <span id="formatText" style="font-weight: 600;">JPEG</span>
+               </div>
+             </div>
+             
+             <div id="processingTimeContainer" style="margin-top: 1rem; text-align: center; display: none;">
+                <span class="expiry-tag" style="background: transparent; color: var(--text-muted);">
+                  processed in <span id="processingTime" style="font-weight: 700; color: var(--text-main);">0.00s</span>
+                </span>
+             </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Final Result Card -->
+      <div class="result-card" id="card-output" style="display: none;">
+        <div class="card-header">
+          <div class="card-icon-box">
+             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+             </svg>
+          </div>
+          <span class="card-title">Passport Photo</span>
+        </div>
+        
+        <div class="image-frame" id="resultFrame">
+           <div class="status-placeholder" id="resultPlaceholder">
+             <p>Waiting for result...</p>
+           </div>
+           <img id="resultImage" style="display: none;" />
+        </div>
+
+        <div id="expiryWarning" class="expiry-tag" style="display: none;">
+           ⚠️ Link expires in 2 minutes
+        </div>
+
+        <button id="downloadBtn" class="download-btn" style="display: none;" onclick="downloadImage()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download Passport Photo
+        </button>
+      </div>
+
+    </div>
+    <!-- AD SLOT 3: Bottom Banner -->
+    <div class="ad-banner-bottom" id="ad-bottom-banner">
+      <span>Bottom Advertisement (728x90)</span>
+    </div>
+  </div>
+
+  <script>
+    let selectedFile = null;
+    let outputImageUrl = null;
+    let downloadUrl = null;
+    let selectedColor = '#FFFFFF';
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('img');
+    const generateBtn = document.getElementById('generateBtn');
+    const selectedFileDiv = document.getElementById('selectedFile');
+    const resultsGrid = document.getElementById('resultsGrid');
+    const statusMessage = document.getElementById('statusMessage');
+
+    // Drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.add('drag-over');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, () => {
+        dropZone.classList.remove('drag-over');
+      }, false);
+    });
+
+    function selectColor(element, color) {
+      selectedColor = color;
+      // Remove selected class from all options
+      document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+      // Add to clicked element
+      element.classList.add('selected');
+      console.log('Selected color:', color);
+    }
+
+    dropZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        handleFileSelect({ target: fileInput });
+      }
+    }, false);
+
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        selectedFile = file;
+        selectedFileDiv.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        selectedFileDiv.classList.add('show');
+        generateBtn.disabled = false;
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const originalImage = document.getElementById('originalImage');
+          const originalPlaceholder = document.getElementById('originalPlaceholder');
+          originalImage.src = e.target.result;
+          originalImage.style.display = 'block';
+          originalPlaceholder.style.display = 'none';
+          
+          // Update format info
+          document.getElementById('formatText').textContent = file.type.split('/')[1].toUpperCase();
+        };
+        reader.readAsDataURL(file);
+
+        // Show results grid but only the original card initially
+        resultsGrid.style.display = 'grid';
+        document.getElementById('card-original').style.display = 'block';
+        document.getElementById('card-status').style.display = 'none';
+        document.getElementById('card-output').style.display = 'none';
+      }
+    }
+
+    async function upload(event) {
+      if (event) event.preventDefault();
+
+      if (!selectedFile) {
+        showStatus('Please select a file first', 'error');
+        return;
+      }
+
+      console.log('Starting upload...', selectedFile.name);
+
+      // Reset processing UI but keep original image visible
+      // Show processing card
+      document.getElementById('card-status').style.display = 'block';
+      
+      // Reset processing UI but keep original image visible
+      document.getElementById('resultImage').style.display = 'none';
+      document.getElementById('resultPlaceholder').style.display = 'flex';
+      document.getElementById('processingPlaceholder').style.display = 'none';
+      document.getElementById('processingLoader').style.display = 'block';
+      document.getElementById('processingTimeContainer').style.display = 'none';
+      document.getElementById('processingInfo').style.display = 'block';
+      document.getElementById('downloadBtn').style.display = 'none';
+      document.getElementById('statusText').textContent = 'Processing...';
+
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = '<span>Processing...</span>';
+
+      try {
+        const formData = new FormData();
+        formData.append("image", selectedFile);
+        formData.append("bgColor", selectedColor); // Send the selected color
+
+        console.log('Sending request to backend with color:', selectedColor);
+
+        console.log('Sending request to backend...');
+
+        const response = await fetch("http://localhost:3000/passport-photo", {
+          method: "POST",
+          body: formData
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Response data:', data);
+
+        if (data.success) {
+          // Update processing status
+          document.getElementById('processingLoader').style.display = 'none';
+          document.getElementById('processingPlaceholder').style.display = 'flex';
+          document.getElementById('processingPlaceholder').innerHTML = `
+            <svg style="width: 80px; height: 80px; stroke: #10b981;" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div style="color: #10b981; font-weight: 600;">Success!</div>
+          `;
+          document.getElementById('statusText').textContent = 'Complete';
+          document.getElementById('statusText').style.color = '#10b981';
+
+          // Show processing time
+          document.getElementById('processingTimeContainer').style.display = 'block';
+          document.getElementById('processingTime').textContent = `${data.processingTime}s`;
+
+          // Show output image using the Server URL (more reliable than Base64)
+          downloadUrl = data.downloadUrl;
+          outputImageUrl = data.downloadUrl; // Update this to use URL too
+          
+          const resultImage = document.getElementById('resultImage');
+          const resultPlaceholder = document.getElementById('resultPlaceholder');
+          
+          // Add timestamp to prevent browser caching
+          resultImage.src = `${downloadUrl}?t=${new Date().getTime()}`;
+          
+          resultImage.style.display = 'block';
+          resultPlaceholder.style.display = 'none';
+
+          // Show output card
+          document.getElementById('card-output').style.display = 'block';
+
+          // Show download button and expiry warning
+          document.getElementById('downloadBtn').style.display = 'flex';
+          document.getElementById('expiryWarning').style.display = 'block';
+
+          showStatus(data.message, 'success');
+          console.log('Processing completed successfully!');
+        } else {
+          throw new Error(data.error || 'Processing failed');
+        }
+      } catch (error) {
+        console.error('Error during upload:', error);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        
+        document.getElementById('processingLoader').style.display = 'none';
+        document.getElementById('processingPlaceholder').style.display = 'flex';
+        document.getElementById('processingPlaceholder').innerHTML = `
+          <svg style="width: 80px; height: 80px; stroke: #ef4444;" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div style="color: #ef4444; font-weight: 600;">Failed</div>
+        `;
+        document.getElementById('statusText').textContent = 'Error';
+        document.getElementById('statusText').style.color = '#ef4444';
+        showStatus(`Processing failed: ${error.message}`, 'error');
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = '<span>Generate Passport Photo</span>';
+      }
+    }
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message ${type}`;
+      setTimeout(() => {
+        statusMessage.textContent = '';
+        statusMessage.className = '';
+      }, 5000);
+    }
+
+    async function downloadImage() {
+      if (!downloadUrl) return;
+      
+      try {
+        console.log('Downloading from:', downloadUrl);
+        // Fetch the image as a blob
+        const response = await fetch(downloadUrl);
+        const blob = await response.blob();
+        
+        // Create a hidden link to trigger download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        // Generate a nice filename with timestamp
+        a.download = `passport-photo-${new Date().getTime()}.jpg`;
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }, 100);
+        
+      } catch (error) {
+        console.error('Download failed:', error);
+        // Fallback: Just open in new tab if blob fails
+        window.open(downloadUrl, '_blank');
+      }
+    }
+  </script>
+</body>
+</html>
+```
